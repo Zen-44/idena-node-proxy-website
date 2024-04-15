@@ -144,7 +144,7 @@ function purchaseKey(){
                     console.log("Price: ", price);
 
                     const txURL = "https://app.idena.io/dna/send?address=" + 
-                           marketplaceAddr + "&amount=" + price + "&comment=" + token +     // TODO proper amount
+                           marketplaceAddr + "&amount=" + price + "&comment=" + token +
                            "&callback_url=" + SITE_URL + "/submit?token=" + token + 
                            "&callback_format=json";
                     console.log(txURL);
