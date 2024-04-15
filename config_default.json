@@ -1,0 +1,151 @@
+{
+    "port": 3000,
+    "rateLimit": {
+        "windowMs": 10000,
+        "max": 500
+    },
+    "apiKeys": [],
+    "remoteKeys": {
+        "enabled": false,
+        "url": null,
+        "authorization": null,
+        "interval": 300000
+    },
+    "godApiKey": null,
+    "check": {
+        "key": "check-status-key",
+        "methods": [
+            "dna_epoch",
+            "bcn_syncing"
+        ]
+    },
+    "node": {
+        "url": null,
+        "key": null
+    },
+    "logs": {
+        "output": "file",
+        "format": ":date[iso] - :apiKey - :status - :response-time ms - :body - :res[content-length]",
+        "file": "access.log"
+    },
+    "methods": [
+        "dna_identity",
+        "dna_ceremonyIntervals",
+        "dna_epoch",
+        "dna_isValidationReady",
+        "dna_wordsSeed",
+        "dna_getBalance",
+        "dna_version",
+        "dna_signatureAddress",
+        "dna_sendToIpfs",
+        "dna_globalState",
+        "flip_getRaw",
+        "flip_getKeys",
+        "flip_words",
+        "flip_shortHashes",
+        "flip_longHashes",
+        "flip_privateEncryptionKeyCandidates",
+        "flip_sendPrivateEncryptionKeysPackage",
+        "flip_sendPublicEncryptionKey",
+        "flip_wordPairs",
+        "flip_rawSubmit",
+        "bcn_lastBlock",
+        "bcn_blockAt",
+        "bcn_block",
+        "bcn_transaction",
+        "bcn_txReceipt",
+        "bcn_syncing",
+        "bcn_feePerGas",
+        "bcn_getRawTx",
+        "bcn_sendRawTx",
+        "bcn_estimateRawTx",
+        "bcn_burntCoins",
+        "bcn_keyWord",
+        "ipfs_cid",
+        "ipfs_get",
+        "contract_getStake",
+        "contract_readData",
+        "contract_readonlyCall",
+        "contract_readMap",
+        "contract_iterateMap",
+        "contract_batchReadData",
+        "contract_estimateCall",
+        "bcn_estimateTx"
+    ],
+    "cache": [
+        {
+            "method": "dna_version",
+            "duration": 120000
+        },
+        {
+            "method" : "dna_ceremonyIntervals",
+            "duration": 10000
+        },
+        {
+            "method" : "dna_identity",
+            "duration": 10000
+        },
+        {
+            "method" : "dna_isValidationReady",
+            "duration": 10000
+        },
+        {
+            "method" : "dna_wordsSeed",
+            "duration": 10000
+        },
+        {
+            "method" : "dna_getBalance",
+            "duration": 10000
+        },
+        {
+            "method" : "dna_globalState",
+            "duration": 10000
+        },
+        {
+            "method" : "flip_getRaw",
+            "duration": 120000,
+            "useCacheControl" : true
+        },
+        {
+            "method" : "flip_getKeys",
+            "duration": 60000
+        },
+        {
+            "method" : "flip_words",
+            "duration": 120000
+        },
+        {
+            "method" : "flip_words",
+            "duration": 120000
+        },
+        {
+            "method" : "flip_shortHashes",
+            "duration": 60000
+        },
+        {
+            "method" : "flip_longHashes",
+            "duration": 60000
+        },
+        {
+            "method" : "flip_privateEncryptionKeyCandidates",
+            "duration": 60000
+        },
+        {
+            "method" : "flip_privateEncryptionKeyCandidates",
+            "duration": 60000
+        },    
+        {
+            "method": "bcn_block",
+            "duration": 10000
+        },
+        {
+            "method": "bcn_blockAt",
+            "duration": 10000
+        },
+        {
+            "method": "ipfs_get",
+            "duration": 120000,
+            "useCacheControl" : true
+        }
+    ]
+}

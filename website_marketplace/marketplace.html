@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="/styles/marketplace.css">
+    <script src="js/menuUtilities.js"></script>
+    <script src="js/marketplace.js"></script>
+    <title>Marketplace | idena.cloud</title>
+</head>
+<body>
+    <header>
+        <!-- Navigation bar -->
+        <div class="title-logo">
+            <img src="/logo.png" alt="Logo">
+            <div class="title">
+                <p>Marketplace</p>
+                <p>node.idena.cloud</p>
+            </div>
+        </div>
+        
+        <div class="menu">
+            <div class="dropdown" id="avatarDropdown">
+                <input type="checkbox" id="avatarMenu">
+                <label for="avatarMenu"><img id="avatar"></label>
+                <div class="dropdown-content">
+                    <nav>
+                        <ul>
+                            <li>
+                                <a id="userAddress"></a>
+                            </li>
+                            <li>
+                                <a href="" id="logoutButton">Logout</a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>  
+            <div class="dropdown" id="mainMenuDropdown">
+                <input type="checkbox" id="menu">
+                <label for="menu"><span class="button"><span class="hamburger"></span></span></label>
+                <div class="dropdown-content">
+                    <nav>
+                        <ul>
+                            <li>
+                                <a href="https://node.idena.cloud/">Home</a>
+                            </li>
+                            <li>
+                                <a href="/">Marketplace</a>
+                            </li>
+                            <li>
+                                <a href="https://node.idena.cloud/faq">FAQ</a>
+                            </li>
+                            <li>
+                                <a href="https://node.idena.cloud/about">About</a>
+                            </li>
+                            <li>
+                                <a href="https://node.idena.cloud/contact">Contact</a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            </div> 
+        </div>
+    </header>
+
+    <main>
+        <div class="purchasedKeys">
+            <p style="font-weight: bold;">Here are your purchased keys</p>
+            <p>After obtaining a key save it in the <a href="https://app.idena.io/settings/node">Web App</a> (Settings > Node):</p>
+            <p>Node URL: https://node.idena.cloud</p>
+            <p>API Keys: </p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Key</th>
+                        <th>
+                            Epoch 
+                            <span id="infoSymbol" class="info-symbol">&#9826;</span>
+                            <div id="info-box">
+                                <p>The epoch in which the key is available.</p>
+                            </div>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody id="userKeys">
+                    <!-- keys will be added here -->
+                </tbody>
+            </table>
+        </div>
+
+        <div class="buyKey">
+            <!-- button to purchase a key -->
+            <div class="button" onclick="purchaseKey()">Buy a key</div>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 Zen</p>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="/styles/login_page.css">
+    <script src="/js/menuUtilities.js"></script>
+    <script src="/js/loginPage.js"></script>
+    <title>Marketplace | idena.cloud</title>
+</head>
+<body>
+    <header>
+        <!-- Navigation bar -->
+        <div class="title-logo">
+            <img src="/logo.png" alt="Logo">
+            <div class="title">
+                <p>Marketplace</p>
+                <p>node.idena.cloud</p>
+            </div>
+        </div>
+        
+        <div class="menu">
+            <div class="dropdown" id="mainMenuDropdown">
+                <input type="checkbox" id="menu">
+                <label for="menu"><span class="button"><span class="hamburger"></span></span></label>
+                <div class="dropdown-content">
+                    <nav>
+                        <ul>
+                            <li>
+                                <a href="https://node.idena.cloud/">Home</a>
+                            </li>
+                            <li>
+                                <a href="/">Marketplace</a>
+                            </li>
+                            <li>
+                                <a href="https://node.idena.cloud/faq">FAQ</a>
+                            </li>
+                            <li>
+                                <a href="https://node.idena.cloud/about">About</a>
+                            </li>
+                            <li>
+                                <a href="https://node.idena.cloud/contact">Contact</a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <h2>Please login using Idena!</h2>
+        <p>To access the marketplace, please login with your Idena identity!</p>
+        <div class="button" onclick="beginAuth()">Login</div>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 Zen</p>
+    </footer>
+</body>
+</html>

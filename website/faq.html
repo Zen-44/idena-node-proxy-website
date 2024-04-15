@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="styles/faq.css">
+    <script src="js/menuUtilities.js"></script>
+    <title>Shared Node | idena.cloud</title>
+</head>
+<body>
+    <header>
+        <!-- Navigation bar -->
+        <div class="title-logo">
+            <img src="/logo.png" alt="Logo">
+            <div class="title">
+                <p>Idena Shared Node</p>
+                <p>node.idena.cloud</p>
+            </div>
+        </div>
+        
+        <div class="menu">
+            <div class="dropdown" id="mainMenuDropdown">
+                <input type="checkbox" id="menu">
+                <label for="menu"><span class="button"><span class="hamburger"></span></span></label>
+                <div class="dropdown-content">
+                    <nav>
+                        <ul>
+                            <li>
+                                <a href="/">Home</a>
+                            </li>
+                            <li>
+                                <a href="https://marketplace.idena.cloud/">Marketplace</a>
+                            </li>
+                            <li>
+                                <a href="/faq">FAQ</a>
+                            </li>
+                            <li>
+                                <a href="/about">About</a>
+                            </li>
+                            <li>
+                                <a href="/contact">Contact</a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <h2>FAQ</h2>
+        <div class="faq-item">
+            <input type="checkbox" id="q1">
+            <label for="q1">How long is the node rented for?</label>
+            <div class="answer">
+                <p>Access to the node is granted until the end of an epoch. After that, you need to rent the node again.</p>
+            </div>
+        </div>
+        <div class="faq-item">
+            <input type="checkbox" id="q2">
+            <label for="q2">Why do I need to rent a shared node?</label>
+            <div class="answer">
+                <p>If you validate through the Web App, you need access to a node in order attend the validation.</p>
+                <p> If you run a Desktop App (built-in node) and have stable internet, you can use that instead.</p>
+            </div>
+        </div>
+        <div class="faq-item">
+            <input type="checkbox" id="q3">
+            <label for="q3">Should I use a shared node or run one myself?</label>
+            <div class="answer">
+                <p>During the validation ceremony internet traffic peaks on nodes.</p>
+                <p>If your setup does not have a reliable internet connection you should rent a shared node.</p>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 Zen</p>
+    </footer>
+</body>
+</html>
