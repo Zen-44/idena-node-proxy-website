@@ -273,6 +273,7 @@ main table {
 }
 
 main th, main td {
+    position: relative;
     padding: 0.5em;
     border: 1px solid #555;
     text-align: center;
@@ -306,10 +307,11 @@ main tr:hover {
 #info-box{
     /* don't display until pressed and make the box appear to the right of the i symbol */
     display: none;
-    max-width: 300px;
+    width: 200px;
     position: absolute;
     background-color: #cfcfcf;
     border-radius: 25px;
+    z-index: 1;
 }
 
 #info-box p{
@@ -320,7 +322,6 @@ main tr:hover {
 #infoSymbol{
     cursor: pointer;
 }
-
 
 footer{
     box-shadow: 16px 8px 16px 8px rgba(0,0,0,0.2);

@@ -56,9 +56,9 @@ fetch('/auth/address')
         const userAddress = data.address;
         document.getElementById("avatar").src = "https://robohash.idena.io/" + userAddress;
         document.getElementById("userAddress").innerHTML = userAddress;
+        document.getElementById("userAddress").href = "https://scan.idena.io/address/" + userAddress;
     })
     .catch(error => {
-        // Handle any errors that occurred during the request
         console.error(error);
     });
 
