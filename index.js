@@ -196,6 +196,15 @@ app.get("/about", (req, res) => {
   res.status(200).sendFile(path.join(websiteDir, 'about.html'));
 });
 
+// old urls
+app.get("/faq.html", (req, res) => {
+  res.redirect(301, "/faq");
+});
+
+app.get("/contact.html", (req, res) => {
+  res.redirect(301, "/contact");
+});
+
 // Idena RPC ---------------------
 
 app.use(rateLimiter)
