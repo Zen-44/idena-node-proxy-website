@@ -3,7 +3,7 @@ const { v4: uuidv4 } = require('uuid');
 const config = require("../configuration.js");
 const axios = require("axios");
 const logger = require("../logger.js");
-const marketplaceAddr = "0xaF001b9348179964306cbbc600554602AEE6f85b";
+const marketplaceAddr = config.marketplaceAddr;
 
 const db = new sqlite3.Database('./website_marketplace/db/keys.db', async (err) => {
   if (err) {

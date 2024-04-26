@@ -67,6 +67,10 @@ if (process.env.LOGS_OUTPUT) {
   config.logs.output = process.env.LOGS_OUTPUT
 }
 
+if (process.env.MARKETPLACE_ADDR) {
+  config.marketplaceAddr = process.env.MARKETPLACE_ADDR
+}
+
 // print config
 if (process.env.PRINT_CONFIG) {
   console.log(config)
