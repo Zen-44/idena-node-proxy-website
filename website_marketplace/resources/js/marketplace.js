@@ -129,6 +129,10 @@ function purchaseKey(){
                 alert("You reached the limit for discounted keys this epoch! If you have pending keys, please wait for them to be processed or discarded (15 minutes).");
                 return;
             }
+            else if (token == "no keys"){
+                alert("There are currently no keys available for purchase. Please try again later.");
+                return;
+            }
 
             // get addr status
             fetch("/auth/address")
