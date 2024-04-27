@@ -316,7 +316,24 @@ async function beginPurchase(address){
         return undefined;
     });
 
-    // get key count
+    // check if there are unspent keys available
+    let unspentKeys = await new Promise((resolve, reject) => {
+        db.get("SELECT COUNT(*) as count FROM unspent_keys WHERE epoch = ?;", [currentEpoch], (err, row) => {
+            if (err){
+                reject(err);
+            }
+            let count = row ? row.count : 0;
+            resolve(count);
+        });
+    });
+    unspentKeys -= pendingPurchases.length;
+    logger.log("Unspent keys remaining:", unspentKeys);
+
+    if (unspentKeys < 1){
+        return ("no keys");
+    }
+
+    // get user key count
     const keyCount = await new Promise((resolve, reject) => {
         db.get("SELECT COUNT(*) as count FROM keys WHERE address = ? AND epoch = ?;", [address, currentEpoch], (err, row) => {
             if (err){
