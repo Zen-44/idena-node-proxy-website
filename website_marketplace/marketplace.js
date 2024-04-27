@@ -20,6 +20,7 @@ const db = new sqlite3.Database('./website_marketplace/db/keys.db', async (err) 
   }
 });
 
+// create necessary tables if they don't exist
 async function createPendingPurchasesTable(){
     return new Promise((resolve, reject) => {
         db.run("CREATE TABLE IF NOT EXISTS pending_purchases (token TEXT PRIMARY KEY, tx TEXT, created DATIME DEFAULT CURRENT_TIMESTAMP);", (err) => {
@@ -70,7 +71,6 @@ setInterval(async () => {
 }, 15 * 60 * 1000); // 15  mins
 
 // pending purchase checking loop
-let isChecking = false;
 let intervalID;
 let pendingPurchases;
 let submittedTxs;
@@ -85,11 +85,6 @@ let submittedTxs;
 
 function startChecking(){
     return setInterval(async () => {
-        if (isChecking){
-            return;
-        }
-        isChecking = true;
-
         logger.log("Checking purchases");
         
         await checkPendingPurchases().catch((err) => {
@@ -103,11 +98,10 @@ function startChecking(){
             intervalID = undefined;
             return;
         }
-
-        isChecking = false; 
     }, 25000);
 }
 
+// get tx by token
 function getTx(token){
     return new Promise((resolve, reject) => {
         db.get("SELECT tx, created FROM pending_purchases WHERE token = ?;", [token], (err, row) => {
@@ -122,6 +116,7 @@ function getTx(token){
 
 }
 
+// check if the amount of a tx is correct
 async function checkAmount(tx){
     const identityStatus = await axios.post(config.node.url, {
             jsonrpc: "2.0",
@@ -144,6 +139,7 @@ async function checkAmount(tx){
     return tx.amount == 5;
 }
 
+// check if the comment of a tx is correct
 function checkComment(tx, token){
     let payload = tx.payload.slice(2);
     // convert hex to string
@@ -166,6 +162,7 @@ async function checkPendingPurchases(){
             logger.log("TX not submitted", token); // this should not happen ?
         }
 
+        // delete if tx is too old
         if (new Date(created + 'Z') < new Date(Date.now() - 15 * 60 * 1000)){   // 15 mins
             logger.log("TX expired", token);
             pendingPurchases.splice(i, 1);
@@ -183,6 +180,7 @@ async function checkPendingPurchases(){
             continue;
         }
 
+        // get tx info from node
         const tx = await axios.post(config.node.url, {
                 jsonrpc: "2.0",
                 method: "bcn_transaction",
@@ -202,21 +200,12 @@ async function checkPendingPurchases(){
         }
 
         if (tx.timestamp != 0){
-            // tx confirmed
+            // tx is mined
             if (tx.to != marketplaceAddr.toLowerCase() || !checkAmount(tx) || !checkComment(tx, token)){
                 continue;
             }
 
-            // remove from pending purchases
-            submittedTxs.splice(i, 1);
-            pendingPurchases.splice(pendingPurchases.indexOf(token), 1);
-            await db.run("DELETE FROM pending_purchases WHERE token = ?;", [token], (err) => {
-                if (err){
-                    logger.error("Error deleting purchase:", err);
-                }
-            });
-
-            // assign key
+            // get current epoch
             let currentEpoch = await axios.post(config.node.url, {
                 jsonrpc: "2.0",
                 method: "dna_epoch",
@@ -225,54 +214,47 @@ async function checkPendingPurchases(){
                 key: config.node.key
             }).then((response) => {
                 return response.data.result.epoch;
-            }).catch((error) => {
-                logger.error("Error getting epoch:", error);
-                return undefined;
-            });
-            let apiKey = await getUnspentApiKey(currentEpoch).catch((err) => {
-                logger.error("Error getting unspent key:", err);
-                return undefined;
             });
 
+            // obtain api key
+            db.run("BEGIN EXCLUSIVE TRANSACTION;");
+            let apiKey = await getUnspentApiKey(currentEpoch);
+
+            // assign api key to user
+            try {
             logger.log("Assigning key:", apiKey, "FOR TOKEN", token);
 
-            await db.run("UPDATE keys SET key = ?, epoch = ? WHERE token = ?;", [apiKey, currentEpoch, token], (err) => {
-                if (err){
-                    logger.error("Error updating key:", err);
+                await db.run("DELETE FROM pending_purchases WHERE token = ?;", [token]);
+                await db.run("UPDATE keys SET key = ?, epoch = ? WHERE token = ?;", [apiKey, currentEpoch, token]);
+        
+                await db.run("COMMIT");
+            } catch (err) {
+                await db.run("ROLLBACK");
+                logger.error("Error during transaction:", err);
                 }
-            });
         }
     }
 }
 
-let isObtainingApiKey = false;
 function getUnspentApiKey(currentEpoch){
-    if (isObtainingApiKey){
-        return;
-    }
-    isObtainingApiKey = true;
-
+    // preferrably ran inside an exclusive transaction
     return new Promise((resolve, reject) => db.get("SELECT key FROM unspent_keys WHERE epoch = ? LIMIT 1;", [currentEpoch], (err, row) => {
         if (err){
             reject(err);
-            isObtainingApiKey = false;
             return;
         }
         if (row == undefined){
             reject(err);
-            isObtainingApiKey = false;
             return;
         }
 
         let apiKey = row ? row.key : null;
-
         db.run("DELETE FROM unspent_keys WHERE key = ?;", [apiKey], (err) => {
             if (err){
                 reject(err);
             }
         });
 
-        isObtainingApiKey = false;
         resolve(apiKey);
     }));
 }
@@ -365,16 +347,27 @@ async function beginPurchase(address){
 
     if (status == "Newbie"){
         // give free key
-        let apiKey = await getUnspentApiKey(currentEpoch);
+        let apiKey;
+        db.run("BEGIN EXCLUSIVE TRANSACTION;");
+        try{
+            apiKey = await getUnspentApiKey(currentEpoch);
+        }
+        catch (err){
+            await db.run("ROLLBACK");
+            logger.error("Error during free key assignment:", err);
+            return err;
+        }
 
         return new Promise((resolve, reject) => {
             const token = uuidv4();
             db.run("INSERT INTO keys (token, address, key, epoch) VALUES (?, ?, ?, ?);", [token, address, apiKey, currentEpoch], (err) => {
                 if (err){
+                    db.run("ROLLBACK");
                     reject(err);
                 }
                 else{
                     logger.log("Free key assigned to:", address);
+                    db.run("COMMIT");
                     resolve("free");
                 }
             });
@@ -412,7 +405,7 @@ function txSubmit(token, txHash){
                 submittedTxs.push(token);
                 if (!intervalID)
                     intervalID = startChecking();
-                logger.log("TX submitted for token:", token, "\nTX:", txHash, "\n");
+                logger.log("TX submitted for token:", token, "\n  TX:", txHash, "\n");
                 resolve(true);
             }
         });
