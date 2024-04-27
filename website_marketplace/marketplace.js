@@ -106,7 +106,7 @@ function getTx(token){
     return new Promise((resolve, reject) => {
         db.get("SELECT tx, created FROM pending_purchases WHERE token = ?;", [token], (err, row) => {
             if (err){
-            return reject(err);
+                return reject(err);
             }
             const tx = row ? row.tx : undefined;
             const created = row ? row.created : undefined;
@@ -222,7 +222,7 @@ async function checkPendingPurchases(){
 
             // assign api key to user
             try {
-            logger.log("Assigning key:", apiKey, "FOR TOKEN", token);
+                logger.log("Assigning key:", apiKey, "FOR TOKEN", token);
 
                 await db.run("DELETE FROM pending_purchases WHERE token = ?;", [token]);
                 await db.run("UPDATE keys SET key = ?, epoch = ? WHERE token = ?;", [apiKey, currentEpoch, token]);
@@ -231,7 +231,7 @@ async function checkPendingPurchases(){
             } catch (err) {
                 await db.run("ROLLBACK");
                 logger.error("Error during transaction:", err);
-                }
+            }
         }
     }
 }
@@ -315,7 +315,7 @@ async function beginPurchase(address){
         logger.error("Error getting epoch:", error);
         return undefined;
     });
-
+    
     // check if there are unspent keys available
     let unspentKeys = await new Promise((resolve, reject) => {
         db.get("SELECT COUNT(*) as count FROM unspent_keys WHERE epoch = ?;", [currentEpoch], (err, row) => {
