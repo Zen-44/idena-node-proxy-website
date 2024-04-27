@@ -223,7 +223,9 @@ async function checkPendingPurchases(){
             // assign api key to user
             try {
                 logger.log("Assigning key:", apiKey, "FOR TOKEN", token);
-
+                
+                submittedTxs.splice(i, 1);
+                pendingPurchases.splice(pendingPurchases.indexOf(token), 1);
                 await db.run("DELETE FROM pending_purchases WHERE token = ?;", [token]);
                 await db.run("UPDATE keys SET key = ?, epoch = ? WHERE token = ?;", [apiKey, currentEpoch, token]);
         
@@ -294,7 +296,6 @@ function getSubmittedTx(){
             resolve(tokens);
         });
     });
-
 }
 
 async function beginPurchase(address){
