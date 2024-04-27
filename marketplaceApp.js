@@ -64,7 +64,7 @@ app.get("/submit", handleErr(async (req, res) => {
   const token = req.query.token;
   const txHash = req.query.tx;
 
-  if (await marketplace.txSubmit(token, txHash)){
+  if (await marketplace.txSubmit(token, txHash) === true){
     res.status(500).send({
       "success": true,
       "url": "https://marketplace.idena.cloud"
