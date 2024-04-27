@@ -384,7 +384,7 @@ async function beginPurchase(address){
                     reject(err);
                 }
                 else{
-                    logger.log("Free key assigned to:", address);
+                    logger.log("Free key " + apiKey + " assigned to:", address);
                     db.run("COMMIT");
                     resolve("free");
                 }
