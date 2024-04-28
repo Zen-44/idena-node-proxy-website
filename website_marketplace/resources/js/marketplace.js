@@ -1,6 +1,6 @@
 const marketplaceAddr = "0xaF001b9348179964306cbbc600554602AEE6f85b";
 const SITE_URL = "https://marketplace.idena.cloud";
-const clipboardCopy = '<span class="clipboard-symbol" style="cursor: pointer;" onclick="copyToClipboard(event)"><span style="font-size: .875em; margin-right: .125em; position: relative; top: -.25em; left: -.125em">📄<span style="position: absolute; top: .25em; left: .25em">📄</span></span></span>';
+const clipboardCopySymbol = '<span class="clipboard-symbol" style="cursor: pointer;" onclick="copyToClipboard(event)"><span style="font-size: .875em; margin-right: .125em; position: relative; top: -.25em; left: -.125em">📄<span style="position: absolute; top: .25em; left: .25em">📄</span></span></span>';
 
 var infoPressed = false;
 window.onload = function() {
@@ -93,7 +93,7 @@ fetch("/get-keys")
                 if (epoch != currentEpoch)
                     key_td.innerHTML = "<s>" + key + "</s>";
                 else key_td.innerHTML = key;
-                key_td.innerHTML += clipboardCopy;
+                key_td.innerHTML += clipboardCopySymbol;
             }
 
             tr.appendChild(key_td);
