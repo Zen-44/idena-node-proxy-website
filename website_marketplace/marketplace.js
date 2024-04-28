@@ -5,6 +5,10 @@ const axios = require("axios");
 const logger = require("../logger.js");
 const marketplaceAddr = config.marketplaceAddr;
 
+let intervalID;
+let pendingPurchases;
+let submittedTxs;
+
 const db = new sqlite3.Database('./website_marketplace/db/keys.db', async (err) => {
   if (err) {
     logger.error(err.message);
@@ -62,18 +66,26 @@ async function createUnspentKeysTable() {
 
 // clear pending purchases that are old
 setInterval(async () => {
-    logger.log("Clearing pending purchases");
-    db.run("DELETE FROM keys WHERE key = 'Pending' AND created < DATETIME('now', '-15 minute');", (err) => {
+    await db.all("SELECT token FROM keys WHERE key = 'Pending' AND created < DATETIME('now', '-15 minute');", (err, rows) => {
+        if (err){
+            logger.error("Error getting pending keys:", err);
+            return;
+        }
+        rows.forEach((row) => {
+            pendingPurchases.splice(pendingPurchases.indexOf(row.token), 1);
+        });
+    });
+    await db.run("DELETE FROM keys WHERE key = 'Pending' AND created < DATETIME('now', '-15 minute');", function (err) {
         if (err){
             logger.error("Error deleting pending keys:", err);
+        }
+        else if (this.changes > 0){
+            logger.log("Cleared", this.changes, "pending purchases");
         }
     });
 }, 15 * 60 * 1000); // 15  mins
 
 // pending purchase checking loop
-let intervalID;
-let pendingPurchases;
-let submittedTxs;
 (async () => {
     await new Promise(resolve => setTimeout(resolve, 3000));
     pendingPurchases = await getPendingTokens();
@@ -312,7 +324,6 @@ async function beginPurchase(address){
         });
     });
     unspentKeys -= pendingPurchases.length;
-    logger.log("Unspent keys remaining:", unspentKeys);
 
     if (unspentKeys < 1){
         return ("no keys");
@@ -385,6 +396,7 @@ async function beginPurchase(address){
             else{
                 pendingPurchases.push(token);
                 logger.log("Purchase started:", token);
+                logger.log("Unspent keys remaining:", unspentKeys - 1);
                 resolve(token);
             }
         });
