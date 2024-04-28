@@ -83,8 +83,8 @@ app.get("/get-keys", handleErr(async (req, res) => {
   const token = req.cookies.token;
   if (await auth.isLogged(token)) {
     const address = await auth.getAddress(token);
-    const keys = await marketplace.getKeys(address);
-    res.status(200).send(keys);
+    const response = await marketplace.getKeys(address);
+    res.status(200).send(response);
   } else {
     res.status(404).send({"err": "Not logged in!"});
   }

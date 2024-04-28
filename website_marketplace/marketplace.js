@@ -206,24 +206,17 @@ async function checkPendingPurchases(){
             }
 
             // get current epoch
-            let currentEpoch = await axios.post(config.node.url, {
-                jsonrpc: "2.0",
-                method: "dna_epoch",
-                params: [],
-                id: 1,
-                key: config.node.key
-            }).then((response) => {
-                return response.data.result.epoch;
-            });
+            let currentEpoch = await getCurrentEpoch();
 
             // obtain api key
-            db.run("BEGIN EXCLUSIVE TRANSACTION;");
-            let apiKey = await getUnspentApiKey(currentEpoch);
+            try{
+                db.run("BEGIN EXCLUSIVE TRANSACTION;");
+                let apiKey = await getUnspentApiKey(currentEpoch);
 
-            // assign api key to user
-            try {
+                // assign api key to user
                 logger.log("Assigning key:", apiKey, "FOR TOKEN", token);
                 
+                // update key
                 submittedTxs.splice(i, 1);
                 pendingPurchases.splice(pendingPurchases.indexOf(token), 1);
                 await db.run("DELETE FROM pending_purchases WHERE token = ?;", [token]);
@@ -240,6 +233,8 @@ async function checkPendingPurchases(){
 
 function getUnspentApiKey(currentEpoch){
     // preferrably ran inside an exclusive transaction
+    if (!currentEpoch)
+        return Promise.reject("Invalid epoch");
     return new Promise((resolve, reject) => db.get("SELECT key FROM unspent_keys WHERE epoch = ? LIMIT 1;", [currentEpoch], (err, row) => {
         if (err){
             reject(err);
@@ -304,18 +299,7 @@ async function beginPurchase(address){
     }
 
     // get current epoch
-    let currentEpoch = await axios.post(config.node.url, {
-        jsonrpc: "2.0",
-        method: "dna_epoch",
-        params: [],
-        id: 1,
-        key: config.node.key
-    }).then((response) => {
-        return response.data.result.epoch;
-    }).catch((error) => {
-        logger.error("Error getting epoch:", error);
-        return undefined;
-    });
+    let currentEpoch = await getCurrentEpoch();
     
     // check if there are unspent keys available
     let unspentKeys = await new Promise((resolve, reject) => {
@@ -366,8 +350,8 @@ async function beginPurchase(address){
     if (status == "Newbie"){
         // give free key
         let apiKey;
-        db.run("BEGIN EXCLUSIVE TRANSACTION;");
         try{
+            db.run("BEGIN EXCLUSIVE TRANSACTION;");
             apiKey = await getUnspentApiKey(currentEpoch);
         }
         catch (err){
@@ -433,16 +417,36 @@ function txSubmit(token, txHash){
 
 function getKeys(address){
     return new Promise((resolve, reject) => {
-        db.all("SELECT token, key, epoch FROM keys WHERE address = ?;", [address], (err, rows) => {
+        db.all("SELECT token, key, epoch FROM keys WHERE address = ?;", [address], async (err, rows) => {
             if (err){
                 reject(err);
             }
+
+            let currentEpoch = await getCurrentEpoch();
             let keys = [];
+
             rows.forEach((row) => {
                 keys.push({"key": row.key, "epoch": row.epoch});
             });
-            resolve(keys);
+
+            resolve({"currentEpoch": currentEpoch, "keys": keys});
         });
+    });
+}
+
+async function getCurrentEpoch(){
+    // get current epoch
+    return await axios.post(config.node.url, {
+        jsonrpc: "2.0",
+        method: "dna_epoch",
+        params: [],
+        id: 1,
+        key: config.node.key
+    }).then((response) => {
+        return response.data.result.epoch;
+    }).catch((err) => {
+        logger.error("Error getting epoch:", err);
+        return undefined;
     });
 }
 
