@@ -131,7 +131,7 @@ function purchaseKey(){
                 return;
             }
             else if (token == "too many keys"){
-                alert("You reached the limit for discounted keys this epoch! If you have pending keys, please wait for them to be processed or discarded (15 minutes).");
+                alert("You reached the limit for discounted keys this epoch! If you have pending keys, please wait for them to be processed or discarded (15-30 minutes).");
                 return;
             }
             else if (token == "no keys"){
