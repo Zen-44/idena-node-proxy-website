@@ -101,7 +101,7 @@ fetch("/get-keys")
             tableBody.appendChild(tr);
         }
 
-        if (data.length == 0){
+        if (data.keys.length == 0){
             const tr = document.createElement("tr");
             const td = document.createElement("td");
             td.colSpan = 2;
