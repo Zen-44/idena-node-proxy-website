@@ -315,7 +315,7 @@ async function beginPurchase(address){
     
     // check if there are unspent keys available
     let unspentKeys = await new Promise((resolve, reject) => {
-        db.get("SELECT COUNT(*) as count FROM unspent_keys WHERE epoch = ?;", [currentEpoch], (err, row) => {
+        db.get("SELECT COUNT(*) AS count FROM unspent_keys WHERE epoch = ?;", [currentEpoch], (err, row) => {
             if (err){
                 reject(err);
             }
@@ -330,13 +330,15 @@ async function beginPurchase(address){
     }
 
     // get user key count
-    const keyCount = await new Promise((resolve, reject) => {
-        db.get("SELECT COUNT(*) as count FROM keys WHERE address = ? AND epoch = ?;", [address, currentEpoch], (err, row) => {
+    const {activeKeyCount, pendingKeyCount} = await new Promise((resolve, reject) => {
+        db.get("SELECT SUM(CASE WHEN key = 'Pending' THEN 1 ELSE 0 END) AS pending, SUM(CASE WHEN epoch = ? THEN 1 ELSE 0 END) AS count FROM keys WHERE address = ?;", [currentEpoch, address], (err, row) => {
             if (err){
                 reject(err);
             }
+            let pending = row ? row.pending : 0;
             let count = row ? row.count : 0;
-            resolve(count);
+
+            resolve({"activeKeyCount": count, "pendingKeyCount": pending});
         });
     });
 
@@ -354,7 +356,7 @@ async function beginPurchase(address){
         return undefined;
     });
 
-    if (keyCount >= 3 || status == "Newbie" && keyCount >= 1){
+    if (activeKeyCount >= 3 || status == "Newbie" && activeKeyCount >= 1 || pendingKeyCount >= 3){
         return ("too many keys");
     }
 
